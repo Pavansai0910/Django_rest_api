@@ -10,4 +10,16 @@ from .serializer import UserSerializer
 #api end points
 @api_view(['GET'])
 def get_user(request):
-    return Response(UserSerializer({'name':"pavansai","age":21}).data)
+    users = User.objects.all()
+    serializer = UserSerializer(users,many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def create_user(request):
+    serializer = UserSerializer(data = request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status = status.HTTP_201_CREATED)
+    else:
+        return RecursionError(serializer.errors,status = status.HTTP_400_BAD_REQUEST)
+    
